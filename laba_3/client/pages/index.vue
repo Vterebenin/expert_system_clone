@@ -15,8 +15,8 @@
               v-divider
               v-form(@submit.prevent="getFormValues")
                 v-card-text
-                  v-text-field(name="name" label="Введите название базы знаний")
-                  v-file-input(name="file" label="Загрузить файл с базой знаний")
+                  v-text-field(v-model="name" name="name" label="Введите название базы знаний")
+                  v-file-input(v-model="file" name="file" label="Загрузить файл с базой знаний")
                 v-card-actions
                   v-spacer
                   v-btn(type="submit") Загрузить
@@ -43,26 +43,33 @@
 
 <script>
 
-export default {
-  name: 'ExpertSystemIndex',
-  data: function () {
-    return {
-      tab: null,
-      files: [],
-      output: ['123', 'llorem ipsum lorem ipsum lorem ipsum lorem ipsum orem ipsum '],
-      name: '',
-      file: '',
-    }
-  },
-  methods: {
-    getFormValues(submitEvent) {
-      // console.log(submitEvent)
-      this.name = submitEvent.target.elements.name.value
-      this.file = submitEvent.target.elements.file.value
+  import axios from "axios";
 
+  export default {
+    name: 'ExpertSystemIndex',
+    data: function () {
+      return {
+        tab: null,
+        files: [],
+        output: ['123', 'llorem ipsum lorem ipsum lorem ipsum lorem ipsum orem ipsum '],
+        name: '',
+        file: [],
+        file_name: '',
+        file_url: '',
 
+      }
+    },
+    methods: {
+      async getFormValues(submitEvent) {
+        let form_data = new FormData()
+        form_data.append('file', this.file)
+        form_data.append('name', this.name)
+        // console.log(submitEvent)
+        console.log(this.file)
+        const { data } = await axios.post('http://localhost:8000/files/', form_data)
+
+      }
     }
+
   }
-
-}
 </script>
