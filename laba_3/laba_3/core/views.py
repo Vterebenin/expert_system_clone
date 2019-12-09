@@ -14,13 +14,19 @@ class FileView(viewsets.ModelViewSet):
     serializer_class = FileSerializer
 
     @staticmethod
+    def list(request):
+        files = File.objects.all().order_by('id')
+        response = FileSerializer(files, many=True).data
+        return Response(response)
+
+    @staticmethod
     def create(request):
         print(request.FILES)
         print(request.data)
         name = request.data['name']
         file = request.data['file']
-        File.objects.create(name=name, file=file)
-        return JsonResponse({
-            'status': 200
-        })
-
+        if len(name) > 3 and file is not None:
+            File.objects.create(name=name, file=file)
+        files = File.objects.all().order_by('id')
+        response = FileSerializer(files, many=True).data
+        return Response(response)
