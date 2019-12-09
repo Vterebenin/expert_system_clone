@@ -41,3 +41,23 @@ class FileView(viewsets.ModelViewSet):
         response = es.open_file(es, selected_file['file'])
 
         return Response(response)
+
+
+    @action(methods=['post'], detail=True)
+    def check_fact(self, request, pk):
+        facts = request.data['facts']
+        initial_facts = request.data['initial_facts']
+        target_fact_id = request.data['target_fact_id']
+        for f in facts:
+            if f['id'] == target_fact_id:
+                target_fact = f
+
+        es_facts = []
+        es_rules = []
+        es_questions = []
+        es = ExpertSystem(es_facts, es_rules, es_questions)
+        selected_file = FileSerializer(File.objects.get(id=pk)).data
+        es.open_file(selected_file['file'])
+        response = es.check_fact(initial_facts, target_fact)
+
+        return Response(response)

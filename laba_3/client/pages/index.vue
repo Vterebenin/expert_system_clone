@@ -2,6 +2,7 @@
   v-container
     v-row
       v-col.text-center(cols="12")
+        v-icon.float-left(@click="selected_file = ''" v-if="selected_file") mdi-close
         | Expert System Clone
     Kdb_parse(v-if="selected_file" :file="selected_file" @clear="selected_file = ''")
     Main(v-else @select="selected_file = $event")

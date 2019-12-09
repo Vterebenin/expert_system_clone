@@ -31,10 +31,11 @@ class File(models.Model):
     name = models.CharField(max_length=50)
 
 
-class ExpertSystem():
-    facts = []
-    rules = []
-    questions = []
+class ExpertSystem(object):
+    def __init__(self, facts, weight, cost):
+        facts = []
+        rules = []
+        questions = []
 
     @staticmethod
     def switch_facts(fact_type):
@@ -49,14 +50,17 @@ class ExpertSystem():
         if output is None:
             output = []
 
+        print(self.rules)
+        print('213qwe')
         for r in self.rules:
-            if target_fact in r.conclusions:
+            print(r)
+            if target_fact in r['conclusions']:
                 output.append(f'{level}) Факт "{target_fact}" является заключением правила *{r}*')
                 rule_is_fine = True
-                for f in r.conditions:
-                    if f.fact_type == 'Изначальный':
+                for f in r['conditions']:
+                    if f['fact_type'] == 'Изначальный':
                         if f in initial_facts:
-                            truth = min(r.truth, f.truth)
+                            truth = min(r['truth'], f['truth'])
                             output.append(f'{level}) Правило "{r}" ещё не сработало. Нашли исходный факт: "{f}"')
                         else:
                             rule_is_fine = False
@@ -64,9 +68,10 @@ class ExpertSystem():
                     else:
                         output.append(f'{level}) Правило "{r}" ещё не сработало. Проверяем факт: "{f}"')
                         child_truth = 1.0
-                        child_result = self.compute(initial_facts, f, output, child_truth, level + 1)
+                        level += 1
+                        child_result = self.compute(initial_facts, f, output, child_truth, level)
                         if child_result is True:
-                            truth = min(r.truth, child_truth)
+                            truth = min(r['truth'], child_truth)
                         else:
                             rule_is_fine = False
                             break
