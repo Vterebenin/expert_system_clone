@@ -1,10 +1,11 @@
 from django.http import JsonResponse
 from django.shortcuts import render
 from rest_framework import viewsets
+from rest_framework.decorators import action
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from .models import File
+from .models import File, ExpertSystem
 from .serializers import FileSerializer
 # Create your views here.
 
@@ -29,4 +30,14 @@ class FileView(viewsets.ModelViewSet):
             File.objects.create(name=name, file=file)
         files = File.objects.all().order_by('id')
         response = FileSerializer(files, many=True).data
+        return Response(response)
+
+    @action(methods=['get'], detail=True)
+    def parse_file(self, request, pk):
+        print(pk)
+        selected_file = FileSerializer(File.objects.get(id=pk)).data
+        print(selected_file['file'])
+        es = ExpertSystem
+        response = es.open_file(es, selected_file['file'])
+
         return Response(response)
